@@ -1,0 +1,64 @@
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from pandas_datareader import data
+import matplotlib.pyplot as plt
+import matplotlib.dates as dt
+import japanize_matplotlib
+
+#日経平均のデータ
+start = '1976-01-01'
+end = '2018-12-31'
+
+df1 = data.DataReader('^225', 'yahoo', start, end)
+
+date = df.set_index['year']
+price = df['Adj Close']
+
+#年ごとにまとめる
+df1_mean = df1[['Adj Close']].resample('M').mean()
+year = df1_mean.index
+
+#インデックスを年単位にする
+df1_sum = df1.resample('Y').mean()
+df1_sum.index = df1_sum.index.year
+
+#教員離職率のデータ
+df2　=pd.read_csv("~/rishyoku_data.csv", encoding='utf-8')
+#データはe-statsからダウンロード
+
+#データに文字列があるので数値に直す
+df2['小学校'] = df2['小学校'].str.replace(',','').astype(np.int)
+df2['中学校'] = df2['中学校'].str.replace(',','').astype(np.int)
+df2['高校'] = df2['高校'].str.replace(',','').astype(np.int)
+
+year = df2.index
+
+#グラフ
+fig = plt.figure(figsize=(20,10))
+ax1 = fig.add_subplot(111)
+bar1 = ax1.bar(year, df2['小学校'], color='#456268',label= '小学校')
+bar2 = ax1.bar(year, df2['中学校'], color='#79a3b1',label= '中学校', bottom=df2['小学校'])
+bar3 = ax1.bar(year, df2['高校'], color='#d0e8f2', label= '高校',bottom=df2['小学校']+df2['中学校'])
+
+ax1.legend(handles=[bar1,bar2,bar3], loc='lower right', title='学校別', fontsize=25)
+
+#背景色
+ax1.set_facecolor('#fcf8ec')
+
+#456268
+#-----------
+ax2 = ax1.twinx()
+ax2.plot(date, price, linewidth=10.0, label='日経平均')
+
+ax2.legend( loc='upper left', fontsize=25)
+
+ax1.set_ylabel("人数")
+ax2.set_ylabel("円")
+
+plt.grid()
+plt.title('教職員の離職率と日経平均')
+plt.legend()
+plt.show()
+
